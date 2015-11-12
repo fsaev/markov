@@ -20,18 +20,26 @@ class Markov(object):
             try:
                 n = self.hash_table[hash(word)]
                 print("word ", n.word, " exists")
+                previous.add_link(n, 0)
             except:
                 self.count += 1
                 n = Node(word)
+                previous.add_link(n, 1)
 
-            previous.add_link(n)
             self.hash_table[hash(n.word)] = n
             previous = n
 
-        previous.add_link(hash("<\s>"))
+        previous.add_link(hash("<\s>"), 1)
 
     def get_count(self):
         print(self.count)
+
+    def traverse(self, stoch):
+        start = self.hash_table[hash("<s>")]
+        current = start
+        while current.word is not '<\s>':
+            total_links = len(current.links)
+            print(total_links)
 
 
 class Node(object):
@@ -40,8 +48,10 @@ class Node(object):
         self.word = word
         self.links = []
 
-    def add_link(self, Vertex):
-        self.links.append(Vertex)
+    def add_link(self, node, unseen):
+        _node = [0,1]
+        if unseen:
+            _node[0] = node
 
 
 class Vertex(object):
@@ -68,6 +78,7 @@ if __name__ == '__main__':
             m.add_chain(sent)
 
         m.get_count()
+       # m.traverse(0)
         print("done")
     else:
         print("No filename")
