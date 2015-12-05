@@ -15,24 +15,21 @@ class Markov(object):
         print(hash(start.word))
 
     def add_chain(self, sentence):
-        previous = self.hash_table[hash("<s>")]
+        previous = self.hash_table[hash("<s>")]  #Initialize start of chain
         for word in sentence:
             try:
-                n = self.hash_table[hash(word)]
+                n = self.hash_table[hash(word)]  #see if we have word
                 print("word ", n.word, " exists")
-                previous.add_link(n, 0)
-            except:
+                previous.add_link(n, False)  #add word as seen
+            except:  #if we don't have word
                 self.count += 1
-                n = Node(word)
-                previous.add_link(n, 1)
+                n = Node(word)  #create
+                previous.add_link(n, True)  #add as unseen
 
-            self.hash_table[hash(n.word)] = n
+            self.hash_table[hash(n.word)] = n  #dump in HT
             previous = n
 
-        previous.add_link(hash("<\s>"), 1)
-
-    def get_count(self):
-        print(self.count)
+        previous.add_link(hash("<\s>"), 1)  #Add end link of chain
 
     def traverse(self, stoch):
         start = self.hash_table[hash("<s>")]
@@ -46,22 +43,16 @@ class Node(object):
 
     def __init__(self, word):
         self.word = word
-        self.links = []
+        self.links_ht = {}
 
     def add_link(self, node, unseen):
-        _node = [0,1]
         if unseen:
-            _node[0] = node
-
-
-class Vertex(object):
-    def __init__(self, f, t):
-        self.f = f
-        self.t = t
-        self.count = 0
-
-    def inc_count(self, by):
-        self.count += by
+            link = [1, node]  #count, and node it's pointing towards
+            self.links_ht[hash(node.word)] = link
+        else:
+            link = self.links_ht[hash(node.word)]
+            link[0] += 1
+            print("Updated link it is now " + link[0])
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
