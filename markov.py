@@ -73,11 +73,11 @@ if __name__ == '__main__':
         sentences = r.get_sentences
         m = Markov()
 
-        for sent in sentences:
-            sent[len(sent)-1] = sent[len(sent)-1].rstrip('\n')
-            m.add_chain(sent)
+        for sent in sentences:  #for each sentence
+            sent[len(sent)-1] = sent[len(sent)-1].rstrip('\n')  #split into words
+            m.add_chain(sent)  #build chain out of words
 
-        m.get_count()
+        print(m.count)
        # m.traverse(0)
         print("done")
     else:
