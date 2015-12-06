@@ -12,24 +12,29 @@ class Markov(object):
         end = Node("<\s>")
         self.hash_table[hash(start.word)] = start
         self.hash_table[hash(end.word)] = end
-        print(hash(start.word))
 
     def add_chain(self, sentence):
-        previous = self.hash_table[hash("<s>")]  #Initialize start of chain
+        current = self.hash_table[hash("<s>")]  # Initialize start of chain
         for word in sentence:
             try:
-                n = self.hash_table[hash(word)]  #see if we have word
-                print("word ", n.word, " exists")
-                previous.add_link(n, False)  #add word as seen
-            except:  #if we don't have word
+                node = self.hash_table[hash(current.word)]  # see if we have the current word
+            except:  # if we don't have word
+                node = 0
+
+            # Creation of next node
+            try:
+                _next = self.hash_table[hash(word)]
+            except:
+                _next = Node(word)  # create
+
+            if node is not 0:
+                current.add_link(_next, True)  # add word as seen
                 self.count += 1
-                n = Node(word)  #create
-                previous.add_link(n, True)  #add as unseen
 
-            self.hash_table[hash(n.word)] = n  #dump in HT
-            previous = n
+            self.hash_table[hash(_next.word)] = _next  # dump in HT
+            current = _next  # move up chain
 
-        previous.add_link(hash("<\s>"), 1)  #Add end link of chain
+        current.add_link(self.hash_table[hash("<\s>")], True)  # Add end link of chain
 
     def traverse(self, stoch):
         start = self.hash_table[hash("<s>")]
@@ -45,14 +50,22 @@ class Node(object):
         self.word = word
         self.links_ht = {}
 
-    def add_link(self, node, unseen):
-        if unseen:
-            link = [1, node]  #count, and node it's pointing towards
-            self.links_ht[hash(node.word)] = link
+    def add_link(self, to, seen):
+        #print(self.word + " --> " + to.word)
+        try:
+            node = self.links_ht(hash(to.word))
+        except:
+            node = 0
+
+        print(node)
+
+        if node is 0:
+            link = [1, to]  #count, and node it's pointing towards
+            self.links_ht[hash(to.word)] = link
         else:
-            link = self.links_ht[hash(node.word)]
+            link = self.links_ht(hash(node.word))
+            print("hi")
             link[0] += 1
-            print("Updated link it is now " + link[0])
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -64,17 +77,20 @@ if __name__ == '__main__':
         sentences = r.get_sentences
         m = Markov()
 
-        for sent in sentences:  #for each sentence
-            sent[len(sent)-1] = sent[len(sent)-1].rstrip('\n')  #split into words
-            m.add_chain(sent)  #build chain out of words
+        for sent in sentences:  # for each sentence
+            sent[len(sent)-1] = sent[len(sent)-1].rstrip('\n')
+            m.add_chain(sent)  # build chain out of words
 
         print(m.count)
-       # m.traverse(0)
+
+        the = m.hash_table[hash("is")]
+        links = the.links_ht
+        for key in links:
+            link = links[key]
+            n = link[1]
+            cnt = link[0]
+            print(n.word + " counted: " + str(cnt))
+        #  m.traverse(0)
         print("done")
     else:
         print("No filename")
-
-
-
-
-
