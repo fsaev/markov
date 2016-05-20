@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import argparse
 from Reader import Reader
 from random import randint
@@ -29,7 +30,7 @@ class Markov(object):
             previous = node
 
     # eta_s: lower tolerance of observations
-    def traverse(self, eta_s):
+    def traverse(self, eta_s, minlen):
         if len(self.word_idx) is 0:
             print("Index empty - Build chain first")
             raise
@@ -40,18 +41,14 @@ class Markov(object):
         while node is not self.word_idx[hash("<\s>")]:
             for key in node.links:
                 link = node.links[key]
-                # print(link.to.word, ":", link.count)
                 if link.count > eta_s:
-                    total_links = total_links + link.count
-                    for i in range(0, link.count):
-                        # Make it more likely to end sentences for each iter
-                        #if link.to is self.word_idx[hash("<\s>")]:
-                        #    for i in range(0, iteration - 1):
-                        #        list_links.append(link)
-                        #        total_links = total_links + link.count
-                        #else:
-                        list_links.append(link)
-            #print(list_links)
+                    if link.to is self.word_idx[hash("<\s>")] \
+                            and iteration < int(minlen):
+                        continue
+                    else:
+                        total_links = total_links + link.count
+                        for i in range(0, link.count):
+                            list_links.append(link)
             print(node.word, "", end="")
             iteration = iteration + 1
             node = list_links[randint(0, total_links - 1)].to
@@ -88,8 +85,8 @@ class Link(object):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('filename', default=None, nargs='?')
+    parser.add_argument('minlen', default=0, nargs='?')
     args = parser.parse_args()
-    print(args)
     if args.filename is not None:
         r = Reader(args.filename)
         sentences = r.get_sentences
@@ -106,6 +103,6 @@ if __name__ == '__main__':
 #            n = link[1]
 #            cnt = link[0]
 #            print(n.word + " counted: " + str(cnt))
-        m.traverse(0)
+        m.traverse(0, args.minlen)
     else:
         print("No filename")
