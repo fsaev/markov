@@ -25,11 +25,15 @@ class Markov(object):
     # dict-index of words in chain
     word_idx = {}
 
-    def __init__(self):
+    def __init__(self, sentences):
         start = Node("<s>")
         end = Node("<\s>")
         self.word_idx[hash(start.word)] = start
         self.word_idx[hash(end.word)] = end
+
+        for sent in sentences:  # for each sentence
+            sent[len(sent)-1] = sent[len(sent)-1].rstrip('\n')
+            self.add_chain(sent)  # build chain out of words
 
     def add_chain(self, sentence):
         previous = self.word_idx[hash("<s>")]
@@ -110,24 +114,22 @@ if __name__ == '__main__':
     parser.add_argument('eta_s', default=0, nargs='?',
                         help='Minimum observations it must have made')
     parser.add_argument('handles', default='n', nargs='?',
-                        help='Add <s> </s> handles to output')
+                        help='Add <s> </s> handles to output (y or n)')
     args = parser.parse_args()
 
     if args.filename is not None:
         r = Reader(args.filename)
-        sentences = r.get_sentences
-        m = Markov()
-
-        for sent in sentences:  # for each sentence
-            sent[len(sent)-1] = sent[len(sent)-1].rstrip('\n')
-            m.add_chain(sent)  # build chain out of words
-
         if args.handles is 'y':
             print("<s> ", end="")
+            m = Markov(r.get_sentences)
             m.traverse(args.eta_s, args.minlen)
             print("<\s>")
-        else:
+        elif args.handles is 'n':
+            m = Markov(r.get_sentences)
             m.traverse(args.eta_s, args.minlen)
             print("")
+        else:
+            print("Invalid argument, use y or n")
     else:
         print("No filename")
+
