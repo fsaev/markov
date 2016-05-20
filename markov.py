@@ -41,7 +41,7 @@ class Markov(object):
         while node is not self.word_idx[hash("<\s>")]:
             for key in node.links:
                 link = node.links[key]
-                if link.count > eta_s:
+                if link.count > int(eta_s):
                     if link.to is self.word_idx[hash("<\s>")] \
                             and iteration < int(minlen):
                         continue
@@ -49,7 +49,8 @@ class Markov(object):
                         total_links = total_links + link.count
                         for i in range(0, link.count):
                             list_links.append(link)
-            print(node.word, "", end="")
+            if iteration is not 0:
+                print(node.word, "", end="")
             iteration = iteration + 1
             if total_links > 2:
                 node = list_links[randint(0, total_links - 1)].to
@@ -57,7 +58,6 @@ class Markov(object):
                 break
             total_links = 0
             list_links = []
-        print("<\s>")
 
 
 
@@ -92,6 +92,8 @@ if __name__ == '__main__':
                         help='Minimum length to try')
     parser.add_argument('eta_s', default=0, nargs='?',
                         help='Minimum observation it must have made')
+    parser.add_argument('handles', default='n', nargs='?',
+                        help='Add <s> </s> handles to output')
     args = parser.parse_args()
     if args.filename is not None:
         r = Reader(args.filename)
@@ -101,7 +103,12 @@ if __name__ == '__main__':
         for sent in sentences:  # for each sentence
             sent[len(sent)-1] = sent[len(sent)-1].rstrip('\n')
             m.add_chain(sent)  # build chain out of words
-
-        m.traverse(0, args.minlen)
+        if args.handles is 'y':
+            print("<s> ", end="")
+            m.traverse(args.eta_s, args.minlen)
+            print("<\s>")
+        else:
+            m.traverse(args.eta_s, args.minlen)
+            print("")
     else:
         print("No filename")
