@@ -1,4 +1,21 @@
 #!/usr/bin/env python
+
+# Markov chain for weechat-logs
+# Copyright (C) 2016 Gavekort
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import argparse
 from Reader import Reader
 from random import randint
@@ -42,21 +59,21 @@ class Markov(object):
                 if link.count > int(eta_s):
                     # Skip if end and iteration is not minlen
                     if link.to is self.word_idx[hash("<\s>")] \
-                            and iteration < int(minlen):
+                                and iteration < int(minlen):
                         continue
                     else:
                         # Put links in a roulette
                         total_links = total_links + link.count
                         for i in range(0, link.count):
                             list_links.append(link)
-            if iteration is not 0:
-                print(node.word, "", end="")
-            iteration = iteration + 1
-            if total_links > 2:
-                # Roll roulette with 1 position per observation
-                node = list_links[randint(0, total_links - 1)].to
-            else:
-                break
+                            if iteration is not 0:
+                                print(node.word, "", end="")
+                                iteration = iteration + 1
+                                if total_links > 2:
+                                    # Roll roulette with 1 position per observation
+                                    node = list_links[randint(0, total_links - 1)].to
+                                else:
+                                    break
             # Reset
             total_links = 0
             list_links = []
