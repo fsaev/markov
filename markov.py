@@ -66,14 +66,14 @@ class Markov(object):
                         total_links = total_links + link.count
                         for i in range(0, link.count):
                             list_links.append(link)
-                            if iteration is not 0:
-                                print(node.word, "", end="")
-                                iteration = iteration + 1
-                                if total_links > 2:
-                                    # Roll roulette with 1 position per observation
-                                    node = list_links[randint(0, total_links - 1)].to
-                                else:
-                                    break
+            if iteration is not 0:
+                print(node.word, "", end="")
+            iteration = iteration + 1
+            if total_links > 2:
+                # Roll roulette with 1 position per observation
+                node = list_links[randint(0, total_links - 1)].to
+            else:
+                break
             # Reset
             total_links = 0
             list_links = []
