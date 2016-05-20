@@ -25,7 +25,7 @@ positional arguments:
   filename    Destination to training-data
   minlen      Minimum length to try
   eta_s       Minimum observations it must have made
-  handles     Add <s> </s> handles to output
+  handles     Add <s> </s> handles to output (y or n)
   
 optional arguments:
   -h, --help  show this help message and exit
