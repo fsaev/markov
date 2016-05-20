@@ -61,7 +61,6 @@ class Markov(object):
 
 
 
-
 class Node(object):
     def __init__(self, word):
         self.word = word
@@ -87,8 +86,12 @@ class Link(object):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('filename', default=None, nargs='?')
-    parser.add_argument('minlen', default=0, nargs='?')
+    parser.add_argument('filename', default=None, nargs='?',
+                        help='Destination to training-data')
+    parser.add_argument('minlen', default=0, nargs='?',
+                        help='Minimum length to try')
+    parser.add_argument('eta_s', default=0, nargs='?',
+                        help='Minimum observation it must have made')
     args = parser.parse_args()
     if args.filename is not None:
         r = Reader(args.filename)
@@ -99,13 +102,6 @@ if __name__ == '__main__':
             sent[len(sent)-1] = sent[len(sent)-1].rstrip('\n')
             m.add_chain(sent)  # build chain out of words
 
-#        the = m.hash_table[hash("<s>")]
-#        links = the.links_ht
-#        for key in links:
-#            link = links[key]
-#            n = link[1]
-#            cnt = link[0]
-#            print(n.word + " counted: " + str(cnt))
         m.traverse(0, args.minlen)
     else:
         print("No filename")
