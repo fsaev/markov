@@ -51,7 +51,10 @@ class Markov(object):
                             list_links.append(link)
             print(node.word, "", end="")
             iteration = iteration + 1
-            node = list_links[randint(0, total_links - 1)].to
+            if total_links > 2:
+                node = list_links[randint(0, total_links - 1)].to
+            else:
+                break
             total_links = 0
             list_links = []
         print("<\s>")
