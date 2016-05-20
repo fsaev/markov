@@ -22,25 +22,46 @@ import re
 
 class Reader(object):
     def __init__(self, path):
-        self.sentences = []
-        self.path = path
-        self.f = open(path, 'r', encoding='utf-8')
+        self.fh = open(path, 'r', encoding='utf-8')
+
+        # https://tools.ietf.org/html/rfc1459#section-2.3.1
+        # https://tools.ietf.org/html/rfc2812#section-2.3.1
+        self.irc_nick_pat = '[a-zA-Z0-9\[\]\\\`_\-^{|}]+'
+        self.irc_user_status = ('@', '~', '+', '%', '&')
 
     @property
     def get_sentences(self):
-        f = self.f
-        sentences = self.sentences
-
-        if re.match('(.*).weechatlog', self.path) is not None: # if weechat
-            for line in f:
-                tmpsentences = line.split('\t')
-                datetime = tmpsentences[0]
-                user = tmpsentences[1]
-                msg = tmpsentences[2]
-                if re.match('<--|-->|--', user) is None:
-                    sentences.append(msg.split(' '))
+        if re.match('(.*).weechatlog', self.fh.name):
+            return self._get_irc_sentences('weechat')
         else:
-            for line in f:
-                sentences.append(line.split(' '))
+            # default to all words in line
+            return [line.split(' ') for line in lines]
+
+    def _get_irc_sentences(self, client):
+        sentences = []
+
+        for line in self.fh.readlines():
+            try:
+                # dynamic function call, e.g. _parse_weechat
+                nick, msg = getattr(self, '_parse_' + client)(line)
+
+                # slower than matching 'not nick', but more versatile
+                if re.match(self.irc_nick_pat, nick):
+                    sentences.append(msg.split(' '))
+            except TypeError:
+                # unvalid line, e.g. False returned from _parse function
+                continue
 
         return sentences
+
+    def _parse_weechat(self, line):
+        try:
+            nick, msg = line.split('\t')[1:]
+
+            # strip user status
+            if nick.startswith(self.irc_user_status):
+                nick = nick[1:]
+
+            return nick, msg.rstrip()
+        except Exception:
+            return False
