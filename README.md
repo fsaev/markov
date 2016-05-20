@@ -33,3 +33,6 @@ optional arguments:
 
 e.g.
 > python3 ~/markov/markov.py ~/.weechat/logs/irc.underworld.no.#foobar.weechatlog 10 2 n
+
+### What is this?
+This project is inspired by [/r/subredditsimulator](https://www.reddit.com/r/SubredditSimulator/). For an explanation, click [here](https://www.reddit.com/r/SubredditSimulator/)
