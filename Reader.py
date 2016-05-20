@@ -12,6 +12,7 @@ class Reader(object):
         sentences = self.sentences
 
         if re.match('(.*).weechatlog', self.path) is not None: # if weechat
+            print("Weechat-log mode")
             for line in f:
                 tmpsentences = line.split('\t')
                 datetime = tmpsentences[0]

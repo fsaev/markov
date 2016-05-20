@@ -4,66 +4,86 @@ from random import randint
 
 
 class Markov(object):
-    hash_table = {}
+    # dict-index of words in chain
+    word_idx = {}
 
     def __init__(self):
-        self.count = 0
         start = Node("<s>")
         end = Node("<\s>")
-        self.hash_table[hash(start.word)] = start
-        self.hash_table[hash(end.word)] = end
+        self.word_idx[hash(start.word)] = start
+        self.word_idx[hash(end.word)] = end
 
     def add_chain(self, sentence):
-        current = self.hash_table[hash("<s>")]  # Initialize start of chain
+        previous = self.word_idx[hash("<s>")]
+        sentence.append("<\s>")
         for word in sentence:
-
-            if hash(current.word) in self.hash_table:
-                node = self.hash_table[hash(current.word)]
+            if hash(word) in self.word_idx:  # if word in index
+                node = self.word_idx[hash(word)]
+                # print(node.word, " exists : ", hash(node.word))
             else:
-                node = 0
+                node = Node(word)
+                self.word_idx[hash(word)] = node
+                # print(word, " was created : ", hash(word))
 
-            # Creation of next node
-            if hash(word) in self.hash_table:
-                next_node = self.hash_table[hash(word)]
-            else:
-                next_node = Node(word)  # create
+            previous.link_to(node)
+            previous = node
 
-            if node is not 0:
-                current.add_link(next_node)  # add word as seen
-                self.count += 1
+    # eta_s: lower tolerance of observations
+    def traverse(self, eta_s):
+        if len(self.word_idx) is 0:
+            print("Index empty - Build chain first")
+            raise
+        total_links = 0
+        list_links = []
+        node = self.word_idx[hash("<s>")]
+        iteration = 0
+        while node is not self.word_idx[hash("<\s>")]:
+            for key in node.links:
+                link = node.links[key]
+                # print(link.to.word, ":", link.count)
+                if link.count > eta_s:
+                    total_links = total_links + link.count
+                    for i in range(0, link.count):
+                        # Make it more likely to end sentences for each iter
+                        #if link.to is self.word_idx[hash("<\s>")]:
+                        #    for i in range(0, iteration - 1):
+                        #        list_links.append(link)
+                        #        total_links = total_links + link.count
+                        #else:
+                        list_links.append(link)
+            #print(list_links)
+            print(node.word, "", end="")
+            iteration = iteration + 1
+            node = list_links[randint(0, total_links - 1)].to
+            total_links = 0
+            list_links = []
+        print("<\s>")
 
-            self.hash_table[hash(next_node.word)] = next_node  # dump in HT
-            current = next_node  # move up chain
 
-        current.add_link(self.hash_table[hash("<\s>")])  # Add end link of chain
-
-    def traverse(self, stoch):
-        start = self.hash_table[hash("<s>")]
-        current = start
-        while current.word is not '<\s>':
-            total_links = len(current.links)
-            print(total_links)
 
 
 class Node(object):
-
     def __init__(self, word):
         self.word = word
-        self.links_ht = {}
+        self.links = {}
 
-    def add_link(self, to):
-        # print(self.word + " --> " + to.word)
-        if hash(to.word) in self.links_ht:
-            node = self.links_ht[hash(to.word)]
+    # Note that links are hashed by their to-Node
+    def link_to(self, to):
+        if hash(to) in self.links:  # if link already established
+            link = self.links[hash(to)]
+            link.count = link.count + 1  # increment link counta
+            # print(self.word, "->", to.word, "(", link.count, ")")
         else:
-            node = 0
+            link = Link(self, to)
+            self.links[hash(to)] = link
+            # print(self.word, "->", to.word, " (new)")
 
-        if node is 0:
-            link = [1, to]  # count, and node it's pointing towards
-            self.links_ht[hash(to.word)] = link
-        else:
-            link = self.links_ht[hash(to.word)]
-            link[0] += 1
+
+class Link(object):
+    def __init__(self, fr, to):
+        self.fr = fr
+        self.to = to
+        self.count = 1
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -79,16 +99,13 @@ if __name__ == '__main__':
             sent[len(sent)-1] = sent[len(sent)-1].rstrip('\n')
             m.add_chain(sent)  # build chain out of words
 
-        print(m.count)
-
-        the = m.hash_table[hash("<s>")]
-        links = the.links_ht
-        for key in links:
-            link = links[key]
-            n = link[1]
-            cnt = link[0]
-            print(n.word + " counted: " + str(cnt))
-        #  m.traverse(0)
-        print("done")
+#        the = m.hash_table[hash("<s>")]
+#        links = the.links_ht
+#        for key in links:
+#            link = links[key]
+#            n = link[1]
+#            cnt = link[0]
+#            print(n.word + " counted: " + str(cnt))
+        m.traverse(0)
     else:
         print("No filename")
