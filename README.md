@@ -24,7 +24,7 @@ usage: markov.py [-h] [filename] [minlen] [eta_s] [handles]
 positional arguments:
   filename    Destination to training-data
   minlen      Minimum length to try
-  eta_s       Minimum observation it must have made
+  eta_s       Minimum observations it must have made
   handles     Add <s> </s> handles to output
   
 optional arguments:

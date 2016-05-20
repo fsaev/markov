@@ -108,7 +108,7 @@ if __name__ == '__main__':
     parser.add_argument('minlen', default=0, nargs='?',
                         help='Minimum length to try')
     parser.add_argument('eta_s', default=0, nargs='?',
-                        help='Minimum observation it must have made')
+                        help='Minimum observations it must have made')
     parser.add_argument('handles', default='n', nargs='?',
                         help='Add <s> </s> handles to output')
     args = parser.parse_args()
