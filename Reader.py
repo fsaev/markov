@@ -16,7 +16,7 @@
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+# along with Markov.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
 
@@ -35,7 +35,7 @@ class Reader(object):
             return self._get_irc_sentences('weechat')
         else:
             # default to all words in line
-            return [line.split(' ') for line in lines]
+            return [line.split(' ') for line in self.fh.readlines()]
 
     def _get_irc_sentences(self, client):
         sentences = []
@@ -49,7 +49,7 @@ class Reader(object):
                 if re.match(self.irc_nick_pat, nick):
                     sentences.append(msg.split(' '))
             except TypeError:
-                # unvalid line, e.g. False returned from _parse function
+                # invalid line, e.g. False returned from _parse function
                 continue
 
         return sentences
