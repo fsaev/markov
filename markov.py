@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Markov chain for weechat-logs
 # Copyright (C) 2016 Gavekort
@@ -108,7 +108,9 @@ class Link(object):
 
 if __name__ == '__main__':
     # Args
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description='Markov Chain for Weechat-logs',
+        epilog='Example: python3 ~/markov/markov.py /path/to/log -m 10 -e 3 -nt')
     parser.add_argument('filename', nargs='?', metavar='/path/to/data',
                         help='Path to training-data (Required)')
     parser.add_argument('-m', '--minlen', default=5, nargs='?', metavar='number',

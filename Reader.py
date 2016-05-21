@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # Markov chain for weechat-logs
 # Copyright (C) 2016 Gavekort
 
