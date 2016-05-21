@@ -115,8 +115,8 @@ if __name__ == '__main__':
                         help='Minimum sentence length to try (Not guaranteed)')
     parser.add_argument('-e', '--eta-s', default=0, nargs='?', metavar='number',
                         help='Minimum amount of observations required')
-    parser.add_argument('-nh', '--no-handles', action='store_true',
-                        help='Remove "<s> </s>" handles from output')
+    parser.add_argument('-nt', '--no-tags', action='store_true',
+                        help='Remove "<s> </s>" tags from output')
     parser.add_argument('--version', action='store_true',
                         help='Print version info')
     args = parser.parse_args()
@@ -132,7 +132,7 @@ if __name__ == '__main__':
         except FileNotFoundError:
             print("File not found")
             sys.exit(1)
-        if args.no_handles is False:
+        if args.no_tags is False:
             print("<s> ", end="")
             m = Markov(r.get_sentences)
             m.traverse(args.eta_s, args.minlen)

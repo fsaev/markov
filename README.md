@@ -31,12 +31,12 @@ optional arguments:
                         Minimum sentence length to try (Not guaranteed)
   -e [number], --eta-s [number]
                         Minimum amount of observations required
-  -nh, --no-handles     Remove "<s> </s>" handles from output
+  -nt, --no-tags        Remove "<s> </s>" tags from output
   --version             Print version info
   ```
 
 e.g.
-> python3 ~/markov/markov.py ~/.weechat/logs/irc.underworld.no.#foobar.weechatlog -m 10 -e 2 --no-handles
+> python3 ~/markov/markov.py ~/.weechat/logs/irc.underworld.no.#foobar.weechatlog -m 10 -e 2 --no-tags
 
 ### What is this?
 This project is inspired by [/r/subredditsimulator](https://www.reddit.com/r/SubredditSimulator/). For an explanation, click [here](https://www.reddit.com/r/SubredditSimulator/comments/3g9ioz/what_is_rsubredditsimulator/)
