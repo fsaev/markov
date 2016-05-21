@@ -21,6 +21,7 @@ import sys
 from Reader import Reader
 from random import randint
 
+version = 0.8
 
 class Markov(object):
     # dict-index of words in chain
@@ -107,16 +108,23 @@ class Link(object):
 
 if __name__ == '__main__':
     # Args
-    parser = argparse.ArgumentParser('Markov Chain for Weechat logs')
-    parser.add_argument('filename', nargs='?',
-                        help='Destination to training-data')
-    parser.add_argument('-m', '--minlen', default=5, nargs='?',
-                        help='Minimum length to try')
-    parser.add_argument('-e', '--eta-s', default=0, nargs='?',
-                        help='Minimum observations it must have made')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('filename', nargs='?', metavar='/path/to/data',
+                        help='Path to training-data (Required)')
+    parser.add_argument('-m', '--minlen', default=5, nargs='?', metavar='number',
+                        help='Minimum sentence length to try (Not guaranteed)')
+    parser.add_argument('-e', '--eta-s', default=0, nargs='?', metavar='number',
+                        help='Minimum amount of observations required')
     parser.add_argument('-nh', '--no-handles', action='store_true',
-                        help='Add <s> </s> handles to output (y or n)')
+                        help='Remove "<s> </s>" handles from output')
+    parser.add_argument('--version', action='store_true',
+                        help='Print version info')
     args = parser.parse_args()
+
+    if args.version is True:
+        print(sys.argv[0], version, " -  (C) 2016 Gavekort")
+        print("Released under GNU GPLv3")
+        sys.exit(0)
 
     if args.filename is not None:
         try:
