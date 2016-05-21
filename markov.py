@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+import sys
 from Reader import Reader
 from random import randint
 
@@ -106,30 +107,32 @@ class Link(object):
 
 if __name__ == '__main__':
     # Args
-    parser = argparse.ArgumentParser()
-    parser.add_argument('filename', default=None, nargs='?',
+    parser = argparse.ArgumentParser('Markov Chain for Weechat logs')
+    parser.add_argument('filename', nargs='?',
                         help='Destination to training-data')
-    parser.add_argument('minlen', default=0, nargs='?',
+    parser.add_argument('-m', '--minlen', default=5, nargs='?',
                         help='Minimum length to try')
-    parser.add_argument('eta_s', default=0, nargs='?',
+    parser.add_argument('-e', '--eta-s', default=0, nargs='?',
                         help='Minimum observations it must have made')
-    parser.add_argument('handles', default='n', nargs='?',
+    parser.add_argument('-nh', '--no-handles', action='store_true',
                         help='Add <s> </s> handles to output (y or n)')
     args = parser.parse_args()
 
     if args.filename is not None:
-        r = Reader(args.filename)
-        if args.handles is 'y':
+        try:
+            r = Reader(args.filename)
+        except FileNotFoundError:
+            print("File not found")
+            sys.exit(1)
+        if args.no_handles is False:
             print("<s> ", end="")
             m = Markov(r.get_sentences)
             m.traverse(args.eta_s, args.minlen)
             print("<\s>")
-        elif args.handles is 'n':
+        else:
             m = Markov(r.get_sentences)
             m.traverse(args.eta_s, args.minlen)
             print("")
-        else:
-            print("Invalid argument, use y or n")
     else:
         print("No filename")
 
